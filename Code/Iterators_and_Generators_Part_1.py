@@ -6,7 +6,7 @@
 # 2) Unpacking a Sequence into Separate Variables, line 60
 # 3) Unpacking Elements from Iterables of Arbitrary Length, line 162
 # 4) Keeping the Last Nth Items, line 306
-# 5)
+# 5) Finding the Largest or Smallest N Items, line 408
 #
 
 # -------------------------------------------------------------------------
@@ -403,3 +403,98 @@ q.popleft()
 # Adding or popping items from either end of a queue has O(1) complexity.
 # This is unlike a list where inserting or removing items from the front
 # of the list is O(N).
+
+
+# 5) Finding the Largest or Smallest N Items
+
+
+# You want to make a list of the largest or smallest N items in a
+# collection.
+
+# The heapq module has two functions--nlargest() and nsmallest()-- that
+# do exactly what you want.
+
+# For example:
+
+
+import heapq
+
+nums = [1, 8, 2, 23, 7, -4, 18, 23, 42, 37, 2]
+
+print(heapq.nlargest(3, nums))
+# [42, 37, 23]
+
+print(heapq.nsmallest(3, nums))
+# [-4, 1, 2]
+
+
+# Both functions also accept a key parameter that allows them to be used
+# with more complicated data structures.
+
+# For example:
+
+
+portfolio = [
+    {'name': 'IBM', 'shares': 100, 'price': 91.1}
+    {'name': 'AAPL', 'shares': 50, 'price': 543.22}
+    {'name': 'FB', 'shares': 200, 'price': 21.09}
+    {'name': 'HPQ', 'shares': 35, 'price': 31.75}
+    {'name': 'YHOO', 'shares': 45, 'price': 16.35}
+    {'name': 'ACME', 'shares': 75, 'price': 115.65}
+]
+
+cheap = heapq.nsmallest(3, portfolio, key=lambda s: s['price'])
+expensive = heapq.nlargest(3, portfolio, key=lambda s: s['price'])
+
+
+# If you are looking for the N smallest or largest items and N is small
+# compared to the overall size of the collection, these functions provide
+# superior performance. Underneath the covers, they work by first
+# converting the data into a list where items are ordered as a heap.
+
+# For example:
+
+
+nums = [1, 8, 2, 23, 7, -4, 18, 23, 42, 37, 2]
+import heapq
+heap = list(nums)
+heapq.heapify(heap)
+
+heap
+# [-4, 2, 1, 23, 7, 2, 18, 23, 42, 37, 8]
+
+
+# The most important feature of a heap is that heap[0] is always the
+# smallest item. Moreover, subsequent items can be easily found using the
+# heapq.heappop() method, which pops off the first item and replaces it
+# with the next smallest item (an operation that requires O(log N)
+# operations where N is the size of the heap).
+
+# For example:
+
+
+heapq.heappop(heap)
+# -4
+
+heapq.heappop(heap)
+# 1
+
+heapq.heappop(heap)
+# 2
+
+
+# The nlargest() and nsmallest() functions are most appropriate if you are
+# trying to find a relatively small number of items. If you are simply
+# trying to find the single smallest or largest item (N=1), it is faster
+# to use min() and max(). Similarly, if N is about the use sorted(items)[:N]
+# or sorted(items)[-N:]). It should be noted that the actual implementation
+# of nlargest() and nsmallest() is adaptive in how it operates and will
+# carry out some of these optimizations on your behalf(e.g., using sorting
+# if N is close to the same size as the input).
+
+# Although it's not necessary to use this recipe, the implementation of a
+# heap is an interesting and worthwhile subject of study. This can usually
+# be found in any decent book on algorithms and data structures. The
+# documentation for the heapq module also discusses the underlying
+# implementation details.
+
