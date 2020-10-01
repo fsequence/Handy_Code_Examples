@@ -1,65 +1,17 @@
 #
-# Iterators and Generators Part 1
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-#
-# 1) Iterating in Sorted Order Over Merged Sorted Iterables, line 13
-# 2) Unpacking a Sequence into Separate Variables, line 60
-# 3) Unpacking Elements from Iterables of Arbitrary Length, line 162
-# 4) Keeping the Last Nth Items, line 306
-# 5) Finding the Largest or Smallest N Items, line 408
-#
+# Data Structures and Algorithms Part 1
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+# 1) Unpacking a Sequence into Separate Variables, line 14
+# 2) Unpacking Elements from Iterables of Arbitrary Length, line 116
+# 3) Keeping the Last Nth Items, line 259
+# 4) Finding the Largest or Smallest N Items, line 360
+# 5) Implementing a Priority Queue, line 454
 
 # -------------------------------------------------------------------------
 #
 #
-# 1) Iterating in Sorted Order Over Merged Sorted Iterables
-#
-#
-# You have a collection of sorted sequences and you want to iterate over a
-# sorted sequence of them all merged together, then maybe the following will due:
-#
-# Input:
-
-import heapq
-a = [ 1, 4, 7, 10 ]
-b = [ 2, 5, 6, 11 ]
-for c in heapq.merge(a,b):
-    print(c)
-
-
-# Output:
-#
-# 1
-# 2
-# 4
-# 5
-# 6
-# 7
-# 10
-# 11
-
-
-# heapq can be very useful with large files. It iterates over 1 item from each
-# sequence then spits out the smallest one first, then the second one after that
-# and so on. If you want both sequences inputed to be sorted then you must sort
-# that yourself beforehand because the heapq will just read the next item in line
-# from each sequence and give the sorted(smallest to largest) from that.
-
-
-# Example for use with files:
-
-
-import heapq
-
-with open('sorted_file_1', 'rt') as file1, \
-    open('sorted_file_2' 'rt') as file2, \
-    open('merged_file', 'wt') as outf:
-
-    for line in heapq.merge(file1, file2):
-        outf.write(line)
-
-
-# 2) Unpacking a Sequence into Separate Variables
+# 1) Unpacking a Sequence into Separate Variables
 
 
 # You have an N-element tuple or sequence that you would like to unpack into
@@ -161,7 +113,7 @@ price
 # something else already.
 
 
-# 3) Unpacking Elements from Iterables of Arbitrary Length
+# 2) Unpacking Elements from Iterables of Arbitrary Length
 
 
 # You need to unpack N elements from an iterable, but the iterable may be
@@ -304,7 +256,7 @@ tail
 # [10, 7, 4, 5, 9]
 
 
-# 4) Keeping the Last Nth Items
+# 3) Keeping the Last Nth Items
 
 
 # You want to keep a limited history of the last few items seen during
@@ -405,7 +357,7 @@ q.popleft()
 # of the list is O(N).
 
 
-# 5) Finding the Largest or Smallest N Items
+# 4) Finding the Largest or Smallest N Items
 
 
 # You want to make a list of the largest or smallest N items in a
@@ -498,3 +450,139 @@ heapq.heappop(heap)
 # documentation for the heapq module also discusses the underlying
 # implementation details.
 
+
+# 5) Implementing a Priority Queue
+
+
+# You want to implement a queue that sorts items by a given priority and
+# always returns the item with the highest priority on each pop operation.
+
+# The following class uses the heapq module to implement a simple priority
+# queue:
+
+
+import heapq
+
+class PriorityQueue:
+    def __init__(self):
+        self._queue = []
+        self._index = 0
+
+    def push(self, item, priority):
+        heapq.heappush(self._queue, (-priority, self._index, item))
+        self._index += 1
+
+    def pop(self):
+        return heapq.heappop(self._queue)[-1]
+
+
+# Here is an example of how it might be used:
+
+class Item:
+    def __init__(self, name):
+        self.name = name
+    def __repr__(self):
+        return 'Item({!r})'.format(self.name)
+
+
+q = PriorityQueue()
+q.push(Item('foo'), 1)
+q.push(Item('bar'), 5)
+q.push(Item('spam'), 4)
+q.push(Item('grok'), 1)
+
+
+q.pop()
+# Item('bar')
+
+q.pop()
+# Item('spam')
+
+q.pop()
+# Item('foo')
+
+q.pop()
+# Item('grok')
+
+
+# Observe how the first pop() operation returned the item with the highest
+# priority. Also observe how the two items with the same priority (foo and
+# grok) were returned in the same order in which they were inserted into
+# the queue.
+
+# The core of this recipe concerns the use of the heapq module. The
+# functions heapq.heappush() and heapq.heappop() insert and remove items
+# from a list _queue in a way such that the first item in the list has the
+# smallest priority. The heappop() method always returns the "smallest"
+# item, so that is the key to making the queue pop the correct items.
+# Moreover, since the push and pop operations have O(log N) complexity
+# where N is the number of items in the heap, they are fairly efficient
+# even for fairly large values of N.
+
+# In this recipe, the queue consists of tuples of the form (-priority,
+# index, item). The priority value is negated to get the queue to sort
+# items from highest priority to lowest priority. This is opposite of the
+# normal heap ordering, which sorts from lowest to highest value.
+
+# The role of the index variable is to properly order items with the same
+# priority level. By keeping a constantly increasing index, the items will
+# be sorted according to the order in which they were inserted. However,
+# the index also serves an important role in making the comparison
+# operations work for items that have the same priority level.
+
+# To elaborate on that, instances of Item in the example can't be ordered.
+
+
+# For example:
+
+
+a = Item('foo')
+b = Item('bar')
+
+a < b
+# Traceback (most recent call last):
+#     File"<stdin>", line 1, in <module>
+# TypeError: unorderable types: Item() < Item()
+
+
+# If you make (priority, item) tuples, they can be compared as long as the
+# priorities are different. However, if two tuples with equal priorities
+# are compared, the comparison fails as before.
+
+
+# For example:
+
+
+a = (1, Item('foo'))
+b = (5, Item('bar'))
+
+a < b
+# True
+
+c = (1, Item('grok'))
+
+a < c
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+# TypeError: unorderable types: Item() < Item()
+
+
+# By introducing the extra index and making(priority, index, item) tuples,
+# you avoid this problem entirely since no two tuples will ever have the
+# same value for index (and Python never bothers to compare the remaining
+# tuple values once the result of comparison can be determined):
+
+
+a = (1, 0, Item('foo'))
+b = (5, 1, Item('bar'))
+c = (1, 2, Item('grok'))
+
+a < b
+# True
+
+a < c
+# True
+
+
+# If you want to use this queue for communication between threads, you need
+# to add appropriate locking and signaling.
