@@ -1,0 +1,102 @@
+#
+# Data Structures and Algorithms Part 2
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+# 6) Mapping Keys to Multiple Values in a Dictionary, line 14
+# 7)
+# 8)
+# 9)
+# 10)
+
+# -------------------------------------------------------------------------
+
+
+# 1) Mapping Keys to Multiple Values in a Dictionary
+
+# You want to make a dictionary that maps keys to more than one value (a
+# so-called "multi-dict").
+
+# A dictionary is a mapping where each key is mapped to a single value. If
+# you want to map keys to multiply values, you need to store the multiple
+# values in another container such as a list or set. For example, you might
+# make dictionaries like this:
+
+
+d = {
+    'a' : [1, 2, 3],
+    'b' : [4, 5]
+}
+
+e = {
+    'a' : {1, 2, 3},
+    'b' : {4, 5}
+}
+
+
+# The choice of whether or not to use lists or sets depends on intended use.
+# Use a list if you want to preserve the insertion order of the items. Use a
+# set if you want to eliminate duplicates (and don't care about the order).
+
+# To easily construct such dictionaries, you can use defaultdict in the
+# collections module. A feature of defaultdict is that it automatically
+# initializes the first value so you can simply focus on adding items.
+
+
+# For example:
+
+
+from collections import defaultdict
+
+d = defaultdict(list)
+d['a'].append(1)
+d['a'].append(2)
+d['b'].append(4)
+
+
+d = defaultdict(set)
+d['a'].add(1)
+d['a'].add(2)
+d['b'].add(4)
+
+
+# One caution with defaultdict is that it will automatically create
+# dictionary entries for keys accessed later on (even if they aren't
+# currently found in the dictionary). If you don't want this behavior,
+# you might use setdefault() on an ordinary dictionary instead.
+
+
+# For example:
+
+
+d = {}      # A regular dictionary
+d.setdefault('a', []).append(1)
+d.setdefault('a', []).append(2)
+d.setdefault('b', []).append(4)
+
+
+# However, many programmers find setdefault() to be a little unnatural--not
+# to mention the fact that it always creates a new instance of the initial
+# value on each invocation (the empty list [] in the example).
+
+# In principle, constructing a multivalued dictionary is simple. However,
+# initialization of the first value can be messy if you try to do it
+# yourself. For example, you might have code that looks like this:
+
+
+d = {}
+for key, value in pairs:
+    if key not in d:
+        d[key] = []
+    d[key].append(value)
+
+
+# Using a defaultdict simply leads to much cleaner code:
+
+
+d = defaultdict(list)
+for key, value in pairs:
+    d[key].append(value)
+
+
+# This recipe is strongly related to the problem of grouping records
+# together in data processing problems.
