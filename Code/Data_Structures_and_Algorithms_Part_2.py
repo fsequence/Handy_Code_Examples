@@ -262,6 +262,23 @@ min_value = prices[min(prices, key=lambda k: prices[k])]
 # The solution involving zip() solves the problem by "inverting" the
 # dictionary into a sequence of (value, key) pairs. When performing
 # comparisons on such tuples, the value element is compared first, followed
-# by the key. This gives you exactyly the behavior that you want and allows
+# by the key. This gives you exactly the behavior that you want and allows
 # reductions and sorting to be easily performed on the dictionary contents
 # using a single statement.
+
+# It should be noted that in calculations involving (value, key) pairs, the
+# key will be used to determine the result in instances where multiple
+# entries happen to have the same value. For instance, in calculations such
+# as min() and max(), the entry with the smallest or largest key will be
+# returned if there happen to be duplicate values.
+
+# For example:
+
+
+prices = { 'AAA' : 45.23, 'ZZZ': 45.23 }
+
+min(zip(prices.values(), prices.keys()))
+# (45.23, 'AAA')
+
+max(zip(prices.values()), prices.keys())
+# (45.23, 'ZZZ')
