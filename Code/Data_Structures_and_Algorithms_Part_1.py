@@ -1,12 +1,14 @@
-#
+
 # Data Structures and Algorithms Part 1
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 
 # 1) Unpacking a Sequence into Separate Variables, line 14
 # 2) Unpacking Elements from Iterables of Arbitrary Length, line 116
 # 3) Keeping the Last Nth Items, line 259
 # 4) Finding the Largest or Smallest N Items, line 360
 # 5) Implementing a Priority Queue, line 454
+
 
 # -------------------------------------------------------------------------
 
