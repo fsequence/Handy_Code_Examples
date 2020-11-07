@@ -461,7 +461,7 @@ with open(somefile, 'r') as f:
 
 
 # ######## 2908217348907230489020982734897239847987234987239487'
-record = '....................100        .........513.25     ............'
+record = '....................100         ........513.25     ............'
 cost = int(record[20:32]) * float(record[40:48])
 
 
@@ -509,7 +509,7 @@ items
 
 
 # If you have a slice instance s, you can get more information about it by
-# looking at its s.start, s.stop and s.step attributes, respecfully.
+# looking at its s.start, s.stop and s.step attributes, respectfully.
 
 
 # For example:
