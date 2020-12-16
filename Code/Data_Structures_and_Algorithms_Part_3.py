@@ -5,7 +5,7 @@
 
 # 12) Determining the Most Frequently Occurring Items in a Sequence, line 17
 # 13) Sorting a List of Dictionaries by a Common Key, line 118
-# 14)
+# 14) Sorting Objects Without Native Comparison Support, line 231
 # 15)
 # 16)
 # 17)
@@ -123,7 +123,7 @@ d
 
 # Sorting this type of structure is easy using the operator module's
 # itemgetter function. Let's say you've queried a database table to get a
-# listing of the members on your website and you recieve the following data
+# listing of the members on your website and you receive the following data
 # structure in return:
 
 
@@ -171,7 +171,7 @@ print(rows_by_uid)
 # For example, this code
 
 
-rows_by_lfname = sorted(rows, key=itemgetter('lname','fname'))
+rows_by_lfname = sorted(rows, key=itemgetter('lname', 'fname'))
 print(rows_by_lfname)
 
 
@@ -226,3 +226,73 @@ min(rows, key=itemgetter('uid'))
 
 max(rows, key=itemgetter('uid'))
 # {'fname': 'Big', 'lname': 'Jones', 'uid': 1004}
+
+
+# 14) Sorting Objects Without Native Comparison Support
+
+
+# You want to sort objects of the same class, but they don't natively
+# support comparison operations.
+
+# The built-in sorted() function takes a key argument that can be passed a
+# callable that will return some value in the object that sorted will use to
+# compare the objects. For example, if you have a sequence of User instances
+# in your application, and you want to sort them by their user_id attribute,
+# you would supply a callable that takes a User instance as input and returns
+# the user_id.
+
+
+# For example:
+
+
+class User:
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+    def __repr__(self):
+        return 'User({})'.format(self.user_id)
+
+
+users = [User(23), User(3), User(99)]
+
+
+users
+# [User(23), User(3), User(99)]
+
+sorted(users, key=lambda u: u.user_id)
+# [User(3), User(23), User(99)]
+
+
+# Instead of using lambda, an alternative approach is to use
+# operator.attrgetter():
+
+
+from operator import attrgetter
+
+sorted(users, key=attrgetter('user_id'))
+# [User(3), User(23), User(99)]
+
+
+# The choice of whether or not to use lambda or attrgetter() may be one of
+# personal preference. However, attrgetter() is often a tad bit faster and
+# also has the added feature of allowing multiple fields to be extracted
+# simultaneously. This is analogous to the use of operator.itemgetter() for
+# dictionaries. For example, if User instances also had a first_name and
+# last_name attribute, you could perform a sort like this:
+
+
+by_name = sorted(users, key=attrgetter('last_name', 'first_name'))
+
+
+# It is also worth nothing that the technique used in this recipe can be
+# applied to functions such as min() and max().
+
+
+# For example:
+
+
+min(users, key=attrgetter('user_id'))
+# User(3)
+
+max(users, key=attrgetter('user_id'))
+# User(99)
