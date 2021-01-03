@@ -4,7 +4,7 @@
 
 
 # 5) Searching and Replacing Text, line 15
-# 6)
+# 6) Searching and Replacing Case-Insensitive Text, line 109
 # 7)
 # 8)
 
@@ -70,6 +70,7 @@ datepat.sub(r'\3-\1-\2', text)
 
 
 from calendar import month_abbr
+
 def change_date(m):
     mon_name = month_abbr[int(m.group(1))]
     return '{} {} {}'.format(m.group(2), mon_name, m.group(3))
@@ -103,3 +104,57 @@ n
 # There isn't much more to regular expression search and replace than the
 # sub() method shown. The trickiest part is specifying the regular
 # expression pattern -- nothing a little practice can't fix.
+
+
+# 6) Searching and Replacing Case-Insensitive Text
+
+
+# You need to search for and possibly replace text in a case-insensitive
+# manner.
+
+# To perform case-insensitive text operations, you need to use the re
+# module and supply the re.IGNORECASE flag to various operations.
+
+
+# For example:
+
+
+text = 'UPPER PYTHON, lower python, Mixed Python'
+
+re.findall('python', text, flags=re.IGNORECASE)
+# ['Python', 'python', 'Python']
+
+re.sub('python', 'snake', text, flags=re.IGNORECASE)
+# 'UPPER snake, lower snake, Mixed snake'
+
+
+# The last example reveals a limitation that replacing text won't match the
+# case of the matched text. If you need to fix this, you might have to use
+# a support function, as in the following:
+
+
+def matchcase(word):
+    def replace(m):
+        text = m.group()
+        if text.isupper():
+            return word.upper()
+        elif text.islower():
+            return word.lower()
+        elif text[0].isupper():
+            return word.capitalize()
+        else:
+            return word
+    return replace
+
+
+# Here is an example of using this last function:
+
+
+re.sub('python', matchcase('snake'), text, flags=re.IGNORECASE)
+# 'UPPER SNAKE, lower snake, Mixed Snake'
+
+
+# For simple use cases, simply providing the re.IGNORECASE is enough to
+# perform case-insensitive matching. However, be aware that this may not
+# be enough for certain kinds of Unicode matching involving case folding.
+# Look into working with Unicode characters in regular expressions.
