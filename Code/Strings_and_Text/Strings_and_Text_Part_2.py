@@ -5,7 +5,7 @@
 
 # 5) Searching and Replacing Text, line 15
 # 6) Searching and Replacing Case-Insensitive Text, line 109
-# 7)
+# 7) Specifying a Regular Expression for the Shortest Match, line 163
 # 8)
 
 
@@ -158,3 +158,57 @@ re.sub('python', matchcase('snake'), text, flags=re.IGNORECASE)
 # perform case-insensitive matching. However, be aware that this may not
 # be enough for certain kinds of Unicode matching involving case folding.
 # Look into working with Unicode characters in regular expressions.
+
+
+# 7) Specifying a Regular Expression for the Shortest Match
+
+
+# You're trying to match a text pattern using regular expressions, but it
+# is identifying the longest possible matches of a pattern. Instead, you
+# would like to change it to find the shortest possible match.
+
+# This problem often arises in patterns that try to match text enclosed
+# inside a pair of starting and ending delimiters (e.g., a quoted string).
+# To illustrate, consider this example:
+
+
+str_pat = re.compile(r'\"(.*)\"')
+text1 = 'Computer says "no."'
+
+str_pat.findall(text1)
+# ['no.']
+
+text2 = 'Computer says "no." Phone says "yes."'
+
+str_pat.findall(text2)
+# ['no." Phone says "yes.']
+
+
+# In this example, the pattern r'\"(.*)\"' is attempting to match text
+# enclosed inside quotes. However, the * operator in a regular expression
+# is greedy, so matching is based on finding the longest possible match.
+# Thus, in the second example involving text2, it incorrectly matches the
+# two quoted strings.
+
+# To fix this, add the ? modifier after the * operator in the pattern, like
+# this:
+
+
+str_pat = re.compile(r'\"(.*?)\"')
+
+str_pat.findall(text2)
+# ['no.', 'yes.']
+
+
+# This makes the matching nongreedy, and produces the shortest match
+# instead.
+
+# The examples above addresses one of the more common problems encountered
+# when writing regular expressions involving the dot (.) character. In a
+# pattern, the dot matches any character except a newline. However, if you
+# bracket the dot with starting and ending text (such as a quote), matching
+# will try to find the longest possible match to the pattern. This causes
+# multiple occurrences of the starting or ending text to be skipped
+# altogether and included in the results of the longer match. Adding the ?
+# right after operators such as * or + forces the matching algorithm to
+# look for the shortest possible match instead.
