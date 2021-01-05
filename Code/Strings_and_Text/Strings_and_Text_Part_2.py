@@ -6,7 +6,7 @@
 # 5) Searching and Replacing Text, line 15
 # 6) Searching and Replacing Case-Insensitive Text, line 109
 # 7) Specifying a Regular Expression for the Shortest Match, line 163
-# 8)
+# 8) 8) Writing a Regular Expression for Multiline Patterns, line
 
 
 # -------------------------------------------------------------------------
@@ -212,3 +212,65 @@ str_pat.findall(text2)
 # altogether and included in the results of the longer match. Adding the ?
 # right after operators such as * or + forces the matching algorithm to
 # look for the shortest possible match instead.
+
+
+# 8) Writing a Regular Expression for Multiline Patterns
+
+
+# You're trying to match a block of text using a regular expression, but
+# you need the match to span multiple lines.
+
+# This problem typically arises in patterns that use the dot(.) to match
+# any character but forget to account for the fact that it doesn't match
+# newlines. For example, suppose you are trying to match C-style comments:
+
+
+comment = re.compile(r'/\*(.*?)\*/')
+text1 = '/* this is a comment */'
+text2 = '''/* this is a
+                multiline comment */
+'''
+
+comment.findall(text1)
+# [' this is a comment ']
+
+comment.findall(text2)
+# []
+
+
+# To fix the problem, you can add support for newlines.
+
+
+# For example:
+
+
+comment = re.compile(r'/\*((?:.|\n)*?)\*/')
+
+comment.findall(text2)
+# [' this is a/n            multiline comment ']
+
+
+# In this pattern, (?:.|\n) specifies a noncapture group (i.e., it defines
+# a group for the purposes of matching, but that group is not captured
+# separately or numbered).
+
+# The re.compile() function accepts a flag, re.DOTALL, which is useful
+# here. It makes the . in a regular expression match all characters,
+# including newlines.
+
+
+# For example:
+
+
+comment = re.compile(r'/\*(.*?)\*/', re.DOTALL)
+
+comment.findall(text2)
+# [' this is a\n                multiline comment ']
+
+
+# Using the re.DOTALL flag works find for simple cases, but might be
+# problematic if you're working with extremely complicated patterns or a
+# mix of separate regular expressions that have been combined together for
+# the purpose of tokenizing, as described in '18)'. If given a choice, it's
+# usually better to define your regular expression pattern so that it works
+# correctly without the need for extra flags.
