@@ -6,7 +6,8 @@
 # 5) Searching and Replacing Text, line 15
 # 6) Searching and Replacing Case-Insensitive Text, line 109
 # 7) Specifying a Regular Expression for the Shortest Match, line 163
-# 8) 8) Writing a Regular Expression for Multiline Patterns, line
+# 8) Writing a Regular Expression for Multiline Patterns, line 217
+# 9) Normalizing Unicode Text to a Standard Representation, line 280
 
 
 # -------------------------------------------------------------------------
@@ -268,9 +269,123 @@ comment.findall(text2)
 # [' this is a\n                multiline comment ']
 
 
-# Using the re.DOTALL flag works find for simple cases, but might be
+# Using the re.DOTALL flag works fine for simple cases, but might be
 # problematic if you're working with extremely complicated patterns or a
 # mix of separate regular expressions that have been combined together for
 # the purpose of tokenizing, as described in '18)'. If given a choice, it's
 # usually better to define your regular expression pattern so that it works
 # correctly without the need for extra flags.
+
+
+# 9) Normalizing Unicode Text to a Standard Representation
+
+
+# You're working with Unicode strings, but need to make sure that all of
+# the strings have the same underlying representation.
+
+# In Unicode, certain characters can be represented by more than one valid
+# sequence of code points. To illustrate, consider the following example:
+
+
+s1 = 'Spicy Jalape\u00f1o'
+s2 = 'Spicy Jalapen\u0303o'
+
+s1
+# 'Spicy Jalapeno' (the n is supposed to have a ~ accent over it)
+
+s2
+# 'Spicy Jalapeno' (the n is supposed to have a ~ accent over it)
+
+s1 == s2
+# False
+
+len(s1)
+# 14
+
+len(s2)
+# 15
+
+
+# Here the text "Spicy Jalapeno" (n with the ~ accent) has been presented in
+# two forms. The first uses the fully composed 'n' (n with the ~ accent)
+# character (U+00F1). The second uses the Latin letter 'n' followed by a
+# '~' combining character (U+0303).
+
+# Having multiple representations is a problem for programs that compare
+# strings. In order to fix this, you should first normalize the text into a
+# standard representation using the unicodedata module:
+
+
+import unicodedata
+
+t1 = unicodedata.normalize('NFC', s1)
+t2 = unicodedata.normalize('NFC', s2)
+
+t1 == t2
+# True
+
+print(ascii(t1))
+# 'Spicy Jalape\xf1o'
+
+t3 = unicodedata.normalize('NFD', s1)
+t4 = unicodedata.normalize('NFD', s2)
+
+t3 == t4
+# True
+
+print(ascii(t3))
+# 'Spicy Jalapen\u0303o'
+
+
+# The first argument to normalize() specifies how you want the string
+# normalized. NFC means that characters should be fully composed (i.e., use
+# a single code point if possible). NFD means that characters should be
+# fully decomposed with the use of combining characters.
+
+# Python also supports the normalization forms NFKC and NFKD, which add
+# extra compatibility features for dealing with certain kinds of
+# characters.
+
+
+# For example:
+
+
+s = '\ufb01'        # A single character
+
+s
+# 'fi'
+
+unicodedata.normalize('NFD', s)
+# 'fi'
+
+# Notice how the combined letters are broken apart here. The two 'fi'
+# above are/would be different than the two 'fi' below.
+
+unicodedata.normalize('NFKD', s)
+# 'fi'
+
+unicodedata.normalize('NFKC', s)
+# 'fi'
+
+
+# Normalization is an important part of any code that needs to ensure that
+# it processes Unicode text in a sane and consistent way. This is
+# especially true when processing strings received as part of user input
+# where you have little control of the encoding.
+
+# Normalization can also be an important part of sanitizing and filtering
+# text. For example, suppose you want to remove all diacritical marks from
+# some text (possibly for the purposes of searching or matching):
+
+
+t1 = unicodedata.normalize('NFD', s1)
+
+''.join(c for c in t1 if not unicodedata.combining(c))
+# 'Spicy Jalapeno' (this should have a plain old 'n')
+
+
+# This last example shows another important aspect of the unicodedata
+# module - namely, utility functions for testing characters against
+# character classes. The combining() function tests a character to see if
+# it is a combining character. There are other functions in the module for
+# finding character categories, testing digits, and so forth.
