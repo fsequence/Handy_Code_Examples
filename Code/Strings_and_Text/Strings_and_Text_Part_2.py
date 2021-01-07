@@ -1,13 +1,14 @@
 
-# Strings and Texts Part 1
+# Strings and Texts Part 2
 # =-=-=-=-=-=-=-=-=-=-=-=-=
 
 
-# 5) Searching and Replacing Text, line 15
-# 6) Searching and Replacing Case-Insensitive Text, line 109
-# 7) Specifying a Regular Expression for the Shortest Match, line 163
-# 8) Writing a Regular Expression for Multiline Patterns, line 217
-# 9) Normalizing Unicode Text to a Standard Representation, line 280
+# 5) Searching and Replacing Text, line 17
+# 6) Searching and Replacing Case-Insensitive Text, line 111
+# 7) Specifying a Regular Expression for the Shortest Match, line 165
+# 8) Writing a Regular Expression for Multiline Patterns, line 219
+# 9) Normalizing Unicode Text to a Standard Representation, line 282
+# 10) Working with Unicode Characters in Regular Expressions, line 395
 
 
 # -------------------------------------------------------------------------
@@ -389,3 +390,63 @@ t1 = unicodedata.normalize('NFD', s1)
 # character classes. The combining() function tests a character to see if
 # it is a combining character. There are other functions in the module for
 # finding character categories, testing digits, and so forth.
+
+
+# 10) Working with Unicode Characters in Regular Expressions
+
+
+# You are using regular expressions to process text, but are concerned
+# about the handling of Unicode characters.
+
+# By default, the re module is already programmed with rudimentary
+# knowledge of certain Unicode character classes. For example, \d already
+# matches any unicode digit character:
+
+
+import re
+num = re.compile('\d+')
+
+# ASCII digits
+num.match('123')
+# <_sre.SRE_Match object at 0x1007d9ed0>
+
+# Arabic digits
+
+num.match('\u0661\u0662\u0663')
+# <_sre.SRE_Match object at 0x101234030>
+
+
+# If you need to include specific Unicode characters in patterns, you can
+# use the usual escape sequence for Unicode characters (e.g., \uFFFF or
+# \UFFFFFFF). For example, here is a regex that matches all characters in a
+# few different Arabic code pages:
+
+
+arabic = re.compile('[\u0600-\u06ff\u0750-\u077f\u08a0-\u08ff]+')
+
+
+# When performing matching and searching operations, it's a good idea to
+# normalize and possibly sanitize all text to a standard form first, see
+# '9)'. However, it's also important to be aware of special cases. For
+# example, consider the behavior of case-insensitive matching combined with
+# case folding:
+
+
+pat = re.complie('stra\u00dfe', re.IGNORECASE)
+s = 'straβe'                # I got the beta symbol from an internet search
+
+pat.match(s)                # Matches
+# <_sre.SRE_Match object at 0x10069d370>
+
+pat.match(s.upper())        # Doesn't match
+
+s.upper()                   # Case folds
+# 'STRASSE'
+
+
+# Mixing Unicode and regular expressions is often a good way to make your
+# head explode. If you're going to do it seriously, you should consider
+# installing the third-party regex library
+# (http://pypi.python.org/pypi/regex), which provides full support for
+# Unicode case folding, as well as a variety of other interesting features,
+# including approximate matching.
