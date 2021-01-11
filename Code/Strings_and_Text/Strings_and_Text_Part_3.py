@@ -3,7 +3,9 @@
 # =-=-=-=-=-=-=-=-=-=-=-=-=
 
 
-# 12) Sanitizing and Cleaning Up Text
+# 12) Sanitizing and Cleaning Up Text, line
+# 13) Aligning Text Strings, line
+# 14) Combining and Concatenating Strings, line
 
 
 # -------------------------------------------------------------------------
@@ -152,3 +154,305 @@ def clean_spaces(s):
 # Although the focus of the above examples has been text, similar
 # techniques can be applied to bytes, including simple replacements,
 # translation, and regular expressions.
+
+
+# 13) Aligning Text Strings
+
+
+# You need to format text with some sort of alignment applied.
+
+# For basic alignment of strings, the ljust(), rjust(), and center()
+# methods of strings can be used.
+
+
+# For example:
+
+
+text = 'Hello World'
+
+text.ljust(20)
+'Hello World           '
+
+text.rjust(20)
+# '         Hello World'
+
+text.center(20)
+# '     Hello World     '
+
+
+# All of these methods accept an optional fill character as well.
+
+
+# For example:
+
+
+text.rjust(20, '=')
+# '=========Hello World'
+
+text.center(20, '*')
+# '****Hello World*****'
+
+
+# The format() function can also be used to easily align things. All you
+# need to do is use the <, >, or ^ characters along with a desired width.
+
+
+# For example:
+
+
+format(text, '>20')
+# '         'Hello World'
+
+format(text, '<20')
+'Hello World          '
+
+format(text, '^20')
+# '     Hello World     '
+
+
+# If you want to include a fill character other than a space, specify it
+# before the alignment character:
+
+
+format(text, '=>20s')
+# '=========Hello World'
+
+format(text, '*^20s')
+# '****Hello World*****'
+
+
+# These format codes can also be used in the format() method when
+# formatting multiple values.
+
+
+# For example:
+
+
+'{:>10s} {:>10s}'.format('Hello', 'World')
+# '     Hello       World'
+
+
+# One benefit of format() is that it is not specific to strings. It works
+# with any value, making it more general purpose. For instance, you can use
+# it with numbers:
+
+x = 1.2345
+
+format(x, '>10')
+'   1.2345'
+
+format(x, '^10.2f')
+'   1.23    '
+
+
+# In older code, you will also see the % operator used to format text.
+
+
+# For example:
+
+'%-20s' % text
+# 'Hello World      '
+
+'%20s' % text
+# '       Hello World'
+
+
+# However, in new code, you should probably prefer the use of the format()
+# function or method. format() is a lot more powerful than what is provided
+# with the % operator. Moreover, format() is more general purpose than
+# using the ljust(), rjust(), or center() method of strings in that it
+# works with any kind of object.
+
+
+# 14) Combining and Concatenating Strings
+
+
+# You want to combine many small strings together into a larger string.
+
+# If the strings you wish to combine are found in a sequence or iterable,
+# the fastest way to combine them is to use the join() method.
+
+
+# For example:
+
+
+parts = ['Is', 'Chicago', 'Not', 'Chicago?']
+
+' '.join(parts)
+'Is Chicago Not Chicago?'
+
+','.join(parts)
+# 'Is,Chicago,Not,Chicago?'
+
+''.join(parts)
+# 'IsChicagoNotChicago?'
+
+
+# At first glance, this syntax might look really odd, but the join()
+# operation is specified as a method on strings. Partly this is because
+# the objects you want to join could come from any number of different data
+# sequences (e.g., lists, tuples, dicts, files, sets, or generators), and
+# it would be redundant to have join() implemented as a method on all of
+# those objects separately. So you just specify the separator string that
+# you want and use the join() method on it to glue text fragments together.
+
+
+# If you're only combining a few strings, using + usually works well
+# enough:
+
+a = 'Is Chicago'
+b = 'Not Chicago?'
+
+a + ' ' + b
+# 'Is Chicago Not Chicago?'
+
+
+# The + operator also works fine as a substitute for more complicated
+# string formatting operations.
+
+
+# For example:
+
+
+print('{} {}'.format(a,b))
+# Is Chicago Not Chicago?
+
+print(a + ' ' + b)
+# Is Chicago Not Chicago?
+
+
+# If you're trying to combine string literals together in source code, you
+# can simply place them adjacent to each other with no + operator.
+
+
+# For example:
+
+
+a = 'Hello' 'World'
+
+a
+# 'HelloWorld'
+
+
+# Joining strings together might not seem advanced enough to warrant
+# more in depth examples but it's often an area where programmers make
+# programming choices that severely impact the performance of their code.
+
+# The most important thing to know is that using the + operator to join
+# a lot of strings together is grossly inefficient due to the memory copies
+# and garbage collection that occurs. In particular, you never want to
+# write code that joins strings together like this:
+
+
+s = ''
+for p in parts:
+    s += p
+
+
+# This runs quite a bit slower than using the join() method, mainly because
+# each += operation creates a new string object. You're better off just
+# collecting all of the parts first and then joining them together at the
+# end.
+
+
+# One related (and pretty neat) trick is the conversion of data to strings
+# and concatenation at the same time using a generator expression, as
+# described in '19)' of 'Data Structures and Algorithms Part 4'.
+
+
+# For example:
+
+
+data = ['ACME', 50, 91.1]
+
+','.join(str(d) for d in data)
+# 'ACME,50,91.1'
+
+
+# Also be on the lookout for unnecessary string concatenations. Sometimes
+# programmers get carried away with concatenation when it's really not
+# technically necessary.
+
+
+# For example, when printing:
+
+
+print(a + ':' + b + ':' + c)        # Ugly
+print(':'.join([a, b, c]))          # Still ugly
+
+print(a, b, c, sep=':')             # Better
+
+
+# Mixing I/O operations and string concatenation is something that might
+# require study in your application. For example, consider the following
+# two code fragments:
+
+
+# Version 1 (string concatenation)
+f.write(chunk1 + chunk2)
+
+# Version 2 (separate I/O operations)
+f.write(chunk1)
+f.write(chunk2)
+
+
+# If the two strings are small, the first version might offer much better
+# performance due to the inherent expense of carrying out an I/O system
+# call. On the other hand, if the two strings are large, the second version
+# may be more efficient, since it avoids making a large temporary result
+# and copying large blocks of memory around. Again, it must be stressed
+# that this is something you would have to study in relation to your own
+# data in order to determine which performs best.
+
+# Last, but not least, if you're writing code that is building output from
+# lots of small strings, you might consider writing that code as a
+# generator function, using yield to emit fragments.
+
+
+# For example:
+
+
+def sample():
+    yield 'Is'
+    yield 'Chicago'
+    yield 'Not'
+    yield 'Chicago?'
+
+
+# The interesting thing about this approach is that it makes no assumption
+# about how the fragments are to be assembled together. For example, you
+# could simply join the fragments using join():
+
+
+text = ''.join(sample())
+
+
+# Or you could redirect the fragments to I/O:
+
+
+for part in sample():
+    f.write(part)
+
+
+# Or you could come up with some kind of hybrid scheme that's smart about
+# combining I/O operations:
+
+
+def combine(source, maxsize):
+    parts = []
+    size = 0
+    for part in source:
+        parts.append(part)
+        size += len(part)
+        if size > maxsize:
+            yield ''.join(parts)
+            parts = []
+            size = 0
+    yield ''.join(parts)
+
+for part in combine(sample(), 32768):
+    f.write(part)
+
+
+# The key point is that the original generator function doesn't have to
+# know the precise details. It just yields the parts.
