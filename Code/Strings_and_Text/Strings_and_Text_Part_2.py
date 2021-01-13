@@ -1,6 +1,6 @@
 
-# Strings and Texts Part 2
-# =-=-=-=-=-=-=-=-=-=-=-=-=
+# Strings and Text Part 2
+# =-=-=-=-=-=-=-=-=-=-=-=-
 
 
 # 5) Searching and Replacing Text, line 17

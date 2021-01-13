@@ -1,6 +1,6 @@
 
-# Strings and Texts Part 3
-# =-=-=-=-=-=-=-=-=-=-=-=-=
+# Strings and Text Part 3
+# =-=-=-=-=-=-=-=-=-=-=-=-
 
 
 # 12) Sanitizing and Cleaning Up Text, line 15

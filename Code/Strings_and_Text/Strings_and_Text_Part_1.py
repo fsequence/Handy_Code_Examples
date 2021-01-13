@@ -1,6 +1,6 @@
 
-# Strings and Texts Part 1
-# =-=-=-=-=-=-=-=-=-=-=-=-=
+# Strings and Text Part 1
+# =-=-=-=-=-=-=-=-=-=-=-=-
 
 
 # 1) Splittings Strings on Any of Multiple Delimiters, line 15
