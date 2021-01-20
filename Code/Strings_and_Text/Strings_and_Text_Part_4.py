@@ -6,7 +6,7 @@
 # 16) Reformatting Text to a Fixed Number of Columns, line 15
 # 17) Handling HTML and XML Entities in Text, line 82
 # 18) Tokenizing Text, line 164
-# 19) Writing a Simple Recursive Descent Parser, line
+# 19) Writing a Simple Recursive Descent Parser, line 335
 
 
 # -------------------------------------------------------------------------
@@ -565,3 +565,94 @@ class ExpressionTreeBuilder(ExpressionEvaluator):
         "expression :: = term { ('+'|'-') term }"
 
         exprval = self.term()
+        while self._accept('PLUS') or self._accept('MINUS'):
+            op = self.tok.type
+            right = self.term()
+            if op == 'PLUS':
+                exprval = ('+', exprval, right)
+            elif op == 'MINUS':
+                exprval = ('-', exprval, right)
+        return exprval
+
+    def term(self):
+        "term ::= factor { ('*'|'/') factor )"
+
+        termval = self.factor()
+        while self._accept('TIMES') or self._accept('DIVIDE'):
+            op = self.tok.type
+            right = self.factor()
+            if op == 'TIMES':
+                termval = ('*', termval, right)
+            elif op == 'DIVIDE':
+                termval = ('/', termval, right)
+        return termval
+
+    def factor(self):
+        'factor ::= NUM | ( expr )'
+
+        if self._accept('NUM'):
+            return int(self.tok.value)
+        elif self._accept('LPAREN'):
+            exprval = self.expr()
+            self._expect('RPAREN')
+            return exprval
+        else:
+            raise SyntaxError('Expected NUMBER or LPAREN')
+
+
+# The following example shows how it works:
+
+
+e = ExpressionTreeBuilder()
+
+e.parse('2 + 3')
+# ('+', 2, 3)
+
+e.parse('2 + 3 * 4')
+# ('+', 2, ('*', 3, 4))
+
+e.parse('2 + (3+4) * 5')
+# ('+', 2, ('+', 3, 4), 5))
+
+e.parse('2 + 3 + 4')
+('+', ('+', 2, 3), 4)
+
+
+# Parsing is a huge topic that generally occupies students for the first
+# three weeks of a compilers course. If you are seeking background
+# knowledge about grammars, parsing algorithms, and other information, a
+# compilers book is where you should turn. Needless to say, all of that
+# can't be repeated here.
+
+# Nevertheless, the overall idea of writing a recursive descent parser is
+# generally simple. To start, you take every grammar rule and you turn it
+# into a function or method. Thus, if your grammar looks like this:
+
+
+    expr ::= term { ('+'|'-') term }*
+
+    term ::= factor { ('*'|'/') factor }*
+
+    factor ::= '(' expr ')'
+
+
+# You start by turning it into a set of methods like this:
+
+
+class ExpressionEvaluator:
+    ...
+    def expr(self):
+        ...
+    def term(self):
+        ...
+    def factor(self):
+        ...
+
+
+# The task of each method is simple--it must walk from left to right over
+# each part of the grammar rule, consuming tokens in the process. In a
+# sense, the goal of the method is to either consume the rule or generate
+# a syntax error if it gets stuck. To do this, the following implementation
+# techniques are applied:
+
+
