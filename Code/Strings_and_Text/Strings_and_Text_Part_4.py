@@ -656,3 +656,106 @@ class ExpressionEvaluator:
 # techniques are applied:
 
 
+# A)
+
+# If the next symbol in the rule is the name of another grammar rule (e.g.,
+# term or factor), you simply call the method with the same name. This is
+# the "descent" part of the algorithm--control descends into another
+# grammar rule. Sometimes rules will involve calls to methods that are
+# already executing (e.g., the call to expr in the factor ::= '(' expr ')'
+# rule). This is the "recursive" part of the algorithm.
+
+
+# B)
+
+# If the next symbol in the rule has to be a specific symbol (e.g., (), you
+# look at the next token and check for an exact match. If it doesn't match,
+# it's a syntax error. The _expect() method in this example is used to
+# perform these steps.
+
+
+# C)
+
+# If the next symbol in the rule could be a few possible choices (e.g., +
+# or -), you have to check the next token for each possibility and advance
+# only if a match is made. This is the purpose of the _accept() method in
+# this example. It's kind of like a weaker version of the _expect() method
+# in that it will advance if a match is made, but if not, it simply backs
+# off without raising an error (thus allowing further checks to be made).
+
+
+# D)
+
+# For grammar rules where there are repeated parts (e.g., such as in the
+# rule expr ::= term { ('+'|'-') term }*), the repetition gets implemented
+# by a while loop. The body of the loop will generally collect or process
+# all of the repeated items until no more are found.
+
+
+# E)
+
+# Once an entire grammar rule has been consumed, each method returns some
+# kind of result back to the caller. This is how values propagate during
+# parsing. For example, in the expression evaluator, return values will
+# represent partial results of the expression being parsed. Eventually
+# they all get combined together in the topmost grammar rule method that
+# executes.
+
+
+# Although a simple example has been shown, recursive descent parsers can
+# be used to implement rather complicated parsers. For example, Python code
+# itself is interpreted by a recursive descent parser. If you're so
+# inclined, you can look at the underlying grammar by inspecting the file
+# Grammar/Grammar in the Python source. That said, there are still pitfalls
+# and limitations with making a parser by hand.
+
+# One such limitation of recursive descent parsers is that they can't by
+# written for grammar rules involving any kind of left recursion. For
+# example, suppose you need to translate a rule like this:
+
+
+items ::= items ',' item
+    |   item
+
+
+# To do it, you might try to use the items() method like this:
+
+
+def items(self):
+    itemsval = self.items()
+    if itemsval and self._accept(','):
+        itemsval.append(self.item())
+    else:
+        itemsval = [ self.item() ]
+
+
+# The only problem is that it doesn't work. In fact, it blows up with an
+# infinite recursion error.
+
+# You can also run into tricky issues concerning the grammar rules
+# themselves. For example, you might have wondered whether or not
+# expressions could have been described by this more simple grammar:
+
+
+expr ::= factor { ('+'|'-'|'*'|'/') factor }
+
+factor ::= '(' expression ')'
+    |   NUM
+
+
+# This grammar technically "works," but it doesn't observe the standard
+# arithmetic rules concerning order of evaluation. For example, the
+# expression "3 + 4 + 5" would get evaluated as "35" instead of the
+# expected result of "23". The use of separate "expr" and "term" rules
+# is there to make evaluation work correctly.
+
+# For really complicated grammars, you are often better off using parsing
+# tools such as PyParsing (http://pyparsing.wikispaces.com) or PLY
+# (http://www.dabeaz.com/ply/index.html). This is what the expression
+# evaluator code looks like using PLY:
+
+
+from ply.lex import shlex      # (shlex might be an update for lex)
+from ply.yacc import yacc
+
+# Token list
