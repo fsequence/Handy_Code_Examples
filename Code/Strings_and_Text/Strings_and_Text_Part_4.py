@@ -755,7 +755,109 @@ factor ::= '(' expression ')'
 # evaluator code looks like using PLY:
 
 
-from ply.lex import shlex      # (shlex might be an update for lex)
+from ply.lex import shlex      # (couldn't put lex, shlex might be update)
 from ply.yacc import yacc
 
 # Token list
+tokens = [ 'NUM', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'LPAREN', 'RPAREN' ]
+
+# Ignored characters
+
+t_ignore = ' \t\n'
+
+# Token specifications (as regexs)
+t_PLUS   = r'\+'
+t_MINUS  = r'-'
+t_TIMES  = r'\*'
+t_DIVIDE = r'/'
+t_LPAREN = r'\('
+t_RPAREN = r'\)'
+
+# Token processing functions
+def t_NUM(t):
+    r'\d+'
+    t.value = int(t.value)
+    return t
+
+# Error handler
+def t_error(t):
+    print('Bad character: {!r}'.format(t.value[0]))
+    t.skip(1)
+
+# Build the lexer (shlex)
+lexer = shlex()
+
+# Grammar rules and handler functions
+def p_expr(p):
+    '''
+    expr : expr PLUS term
+        | expr MINUS term
+    '''
+    if p[2] == '+':
+        p[0] = p[1] + p[3]
+    elif p[2] == '-':
+        p[0] = p[1] - p[3]
+
+def p_expr_term(p):
+    '''
+    expr : term
+    '''
+    p[0] = p[1]
+
+def p_term(p):
+    '''
+    term : term TIMES factor
+        | term DIVIDE factor
+    '''
+    if p[2] == '*':
+        p[0] = p[1] * p[3]
+    elif p[2] == '/':
+        p[0] = p[1] / p[3]
+
+def p_term_factor(p):
+    '''
+    term : factor
+    '''
+    p[0] = p[1]
+
+def p_factor(p):
+    '''
+    factor : NUM
+    '''
+    p[0] = p[1]
+
+def p_factor_group(p):
+    '''
+    factor : LPAREN expr RPAREN
+    '''
+    p[0] = p[2]
+
+def p_error(p):
+    print('Syntax error')
+
+parser = yacc()
+
+
+# In this code, you'll find that everything is specified at a much higher
+# level. You simply write regular expressions for the tokens and high-level
+# handling functions that execute when various grammar rules are matched.
+# The actual mechanics of running the parser, accepting tokens, and so
+# forth is implemented entirely by the library.
+
+# Here is an example of how the resulting parser object gets used
+
+parser.parse('2')
+# 2
+
+parser.parse('2+3')
+# 5
+
+parser.parse('2+(3+4)*5')
+# 37
+
+
+# If you need a bit more excitement in your programming, writing parsers
+# and compilers can be a fun project. Again, a compilers textbook will have
+# a lot of low-level details underlying theory. However, many fine
+# resources can also be found online. Python's own ast module is also worth
+# a look.
