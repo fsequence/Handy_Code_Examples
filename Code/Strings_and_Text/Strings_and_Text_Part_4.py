@@ -374,7 +374,7 @@ factor ::= (expr)
 
 # Now, if you're not familiar with the mechanics of working with a BNF,
 # think of it as a specification of substitution or replacement rules where
-#  symbols on the left side can be replaced by the symbols on the right (or
+# symbols on the left side can be replaced by the symbols on the right (or
 # vice versa). Generally, what happens during parsing is that you try to
 # match the input text to the grammar by making various substitutions and
 # expansions using the BNF. To illustrate, suppose you are parsing an
@@ -399,9 +399,9 @@ expr ::= NUM + term { (+|-) term }*
 expr ::= NUM + factor { (*|/) factor }* { (+|-) term }*
 expr ::= NUM + NUM { (*|/) factor}* { (+|-) term }*
 expr ::= NUM + NUM * factor { (*|/) factor}* { (+|-) term }*
-expr ::= NUM + NUM + NUM { (*|/) factor}* { (+|-) term }*
-expr ::= NUM + NUM + NUM { (+|-) term}*
-expr ::= NUM + NUM + NUM
+expr ::= NUM + NUM * NUM { (*|/) factor}* { (+|-) term }*
+expr ::= NUM + NUM * NUM { (+|-) term }*
+expr ::= NUM + NUM * NUM
 
 
 # Following all of the substitution steps takes a bit of coffee, but
@@ -421,14 +421,14 @@ import re
 import collections
 
 # Token specification
-NUM =    r'(?P<NUM>\d+)'
-PLUS =   r'(?P<PLUS>\+)'
-MINUS =  r'(?P<MINUS>-)'
-TIMES =  r'(?P<TIMES>\*)'
+NUM    = r'(?P<NUM>\d+)'
+PLUS   = r'(?P<PLUS>\+)'
+MINUS  = r'(?P<MINUS>-)'
+TIMES  = r'(?P<TIMES>\*)'
 DIVIDE = r'(?P<DIVIDE>/)'
 LPAREN = r'(?P<LPAREN>\()'
 RPAREN = r'(?P<RPAREN>\))'
-WS =     r'(?P<WS>\S+)'
+WS     = r'(?P<WS>\s+)'
 
 master_pat = re.compile('|'.join([NUM, PLUS, MINUS, TIMES
                                   DIVIDE, LPAREN, RPAREN, WS]))
