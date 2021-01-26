@@ -472,9 +472,9 @@ class ExpressionEvaluator:
         else:
             return False
 
-    def _expect(self, toktype):
+    def _expect(self,toktype):
         'Consume next token if it matches toktype or raise SyntaxError'
-        if not self._accept(toktype)
+        if not self._accept(toktype):
             raise SyntaxError('Expected ' + toktype)
 
     # Grammar rules follow
@@ -506,7 +506,7 @@ class ExpressionEvaluator:
         return termval
 
     def factor(self):
-        "factor ::= NUM | (expr)"
+        "factor ::= NUM | ( expr )"
 
         if self._accept('NUM'):
             return int(self.tok.value)
@@ -634,6 +634,7 @@ e.parse('2 + 3 + 4')
     term ::= factor { ('*'|'/') factor }*
 
     factor ::= '(' expr ')'
+            | NUM
 
 
 # You start by turning it into a set of methods like this:
@@ -706,8 +707,8 @@ class ExpressionEvaluator:
 # be used to implement rather complicated parsers. For example, Python code
 # itself is interpreted by a recursive descent parser. If you're so
 # inclined, you can look at the underlying grammar by inspecting the file
-# Grammar/Grammar in the Python source. That said, there are still pitfalls
-# and limitations with making a parser by hand.
+# Grammar/Grammar in the Python source. That said, there are still numerous
+# pitfalls and limitations with making a parser by hand.
 
 # One such limitation of recursive descent parsers is that they can't by
 # written for grammar rules involving any kind of left recursion. For
@@ -715,7 +716,7 @@ class ExpressionEvaluator:
 
 
 items ::= items ',' item
-    |   item
+        |   item
 
 
 # To do it, you might try to use the items() method like this:
@@ -737,7 +738,7 @@ def items(self):
 # expressions could have been described by this more simple grammar:
 
 
-expr ::= factor { ('+'|'-'|'*'|'/') factor }
+expr ::= factor { ('+'|'-'|'*'|'/') factor }*
 
 factor ::= '(' expression ')'
     |   NUM
