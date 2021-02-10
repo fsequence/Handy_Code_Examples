@@ -1,6 +1,6 @@
 
-# Numbers, Dates and Times 1
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=
+# Numbers, Dates and Times Part 1
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
 # 1) Rounding Numerical Values, line 15
@@ -460,10 +460,11 @@ int('10011010010', 2)
 import os
 
 os.chmod('script.py', 0755)
-File "<stdin>", line 1
-    os.chmod('script.py', 0755)
 
-SyntaxError: invalid token
+# File "<stdin>", line 1
+#     os.chmod('script.py', 0755)
+#
+# SyntaxError: invalid token
 
 
 # Make sure you prefix the octal value with 0o, as shown here:
