@@ -6,13 +6,15 @@
 # 5) Packing and Unpacking Large Integers from Bytes
 # 6)
 # 7)
-# 8)
+# 8) Calculating with Fractions
+# 9)
 
 
 # -------------------------------------------------------------------------
 
 
 # 5) Packing and Unpacking Large Integers from Bytes
+
 
 # You have a byte string and you need to unpack it into an integer value.
 # Alternatively, you need to convert a large integer back into a byte
@@ -127,3 +129,67 @@ x.to_bytes(nbytes, 'little')
 
 
 # 6)
+
+
+# 7)
+
+
+# 8) Calculating with Fractions
+
+
+# You have entered a time machine and suddenly find yourself working on
+# elementary-level homework problems involving fractions. Or perhaps
+# you're writing code to make calculations involving measurements made
+# in your wood shop.
+
+# The fractions module can be used to perform mathematical calculations
+# involving fractions.
+
+
+# For example:
+
+
+from fractions import Fraction
+
+a = Fraction(5, 4)
+b = Fraction(7, 16)
+
+print(a + b)
+# 27/16
+
+print(a * b)
+# 35/64
+
+# Getting numerator/denominator
+c = a * b
+
+c.numerator
+# 35
+
+c.denominator
+# 64
+
+# Converting to a float
+float(c)
+# 0.546875
+
+# Limiting the denominator of a value
+print(c.limit_denominator(8))
+# 4/7
+
+# Converting a float to a fraction
+x = 3.75
+y = Fraction(*x.as_integer_ratio())
+
+y
+# Fraction(15, 4)
+
+
+# Calculating with fractions doesn't arise often in most programs, but
+# there are situations where it might make sense to use them. For example,
+# allowing a program to accept units of measurement in fractions and
+# performing calculations with them in that form might alleviate the need
+# for a user to manually make conversions to decimals or floats.
+
+
+# 9)
