@@ -7,7 +7,7 @@
 # 6)
 # 7)
 # 8) Calculating with Fractions
-# 9)
+# 9) Calculating with Large Numerical Arrays
 
 
 # -------------------------------------------------------------------------
@@ -192,4 +192,140 @@ y
 # for a user to manually make conversions to decimals or floats.
 
 
-# 9)
+# 9) Calculating with Large Numerical Arrays
+
+
+# You need to perform calculations on large numerical datasets, such as
+# arrays or grids.
+
+# For any heavy computation involving arrays, use the NumPy library
+# (http://www.numpy.org). The major feature of NumPy is that it gives
+# Python an array object that is much more efficient and better suited for
+# mathematical calculation than a standard Python list. Here is a short
+# example illustrating important behavioral differences between lists and
+# NumPy arrays:
+
+
+# Python lists
+x = [1, 2, 3, 4]
+y = [5, 6, 7, 8]
+
+x * 2
+# [1, 2, 3, 4, 1, 2, 3, 4]
+
+x + 10
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+# TypeError: can only concatenate list (not "int") to list
+
+x + y
+# [1, 2, 3, 4, 5, 6, 7, 8]
+
+# Numpy arrays
+import numpy as np
+ax = np.array([1, 2, 3, 4])
+ay = np.array([5, 6, 7, 8])
+
+ax * 2
+# array([2, 4, 6, 8])
+
+ax + 10
+# array([11, 12, 13, 14])
+
+ax + ay
+# array([ 6, 8, 10, 12])
+
+ax * ay
+# array([ 5, 12, 21, 32])
+
+
+# As you can see, basic mathematical operations involving arrays behave
+# differently. Specifically, scalar operations (e.g., ax * 2 or ax + 10)
+# apply the operation on an element-by-element basis. In addition,
+# performing math operations when both operands are arrays applies the
+# operation to all elements and produces a new array.
+
+# The fact that math operations apply to all of the elements simultaneously
+# makes it very easy and fast to compute functions across an entire array.
+# For example, if you want to compute the value of a polynomial:
+
+
+def f(x):
+    return 3*x**2 - 2*x + 7
+
+f(ax)
+# array([ 8, 15, 28, 47])
+
+
+# NumPy provides a collection of "universal functions" that allow for array
+# operations. These are replacements for similar functions normally found
+# in the math module.
+
+
+# For example:
+
+
+np.sqrt(ax)
+# array([ 1.        ,   1.41421356,   1.73205081,   2.      ])
+
+np.cos(ax)
+array([ 0.54030231, -0.41614684, -0.9899925, -0.65364362])
+
+
+# Using universal functions can be hundreds of times faster than looping
+# over the array elements one at a time and performing calculations using
+# functions in the math module. Thus, you should prefer their use whenever
+# possible.
+
+# Under the covers, NumPy arrays are allocated in the same manner as in C
+# or Fortran. Namely, they are large, contiguous memory regions consisting
+# of a homogenous data type. Because of this, it's possible to make arrays
+# much larger than anything you would normally put into a Python list. For
+# example, if you want to make a two-dimensional grid of 10,000 by 10,000
+# floats, it's not an issue:
+
+
+grid = np.zeros(shape=(10000,10000), dtype=float)
+
+grid
+# array([[ 0.,  0.,  0., ..., 0., 0., 0.],
+#       [ 0.,  0.,  0., ..., 0., 0., 0.],
+#       [ 0.,  0.,  0., ..., 0., 0., 0.],
+#       ...,
+#       [ 0.,  0.,  0., ..., 0., 0., 0.],
+#       [ 0.,  0.,  0., ..., 0., 0., 0.],
+#       [ 0.,  0.,  0., ..., 0., 0., 0.]])
+
+
+# All of the usual operations still apply to all of the elements
+# simultaneously:
+
+
+grid += 10
+
+grid
+# array([[ 10., 10., 10., ..., 10., 10., 10.,],
+#       [ 10., 10., 10., ..., 10., 10., 10.,],
+#       [ 10., 10., 10., ..., 10., 10., 10.,],
+#       ...,
+#       [ 10., 10., 10., ..., 10., 10., 10.,],
+#       [ 10., 10., 10., ..., 10., 10., 10.,],
+#       [ 10., 10., 10., ..., 10., 10., 10.,]])
+
+np.sin(grid)
+# array([[-0.54402111, -0.54402111, -0.54402111, ..., -0.54402111,
+#         -0.54402111, -0.54402111],
+#       [-0.54402111, -0.54402111, -0.54402111, ..., -0.54402111,
+#         -0.54402111, -0.54402111],
+#       [-0.54402111, -0.54402111, -0.54402111, ..., -0.54402111,
+#         -0.54402111, -0.54402111],
+#       ...,
+#       [-0.54402111, -0.54402111, -0.54402111, ..., -0.54402111,
+#         -0.54402111, -0.54402111],
+#       [-0.54402111, -0.54402111, -0.54402111, ..., -0.54402111,
+#         -0.54402111, -0.54402111],
+#       [-0.54402111, -0.54402111, -0.54402111, ..., -0.54402111,
+#         -0.54402111, -0.54402111]]])
+
+
+# One extremely
